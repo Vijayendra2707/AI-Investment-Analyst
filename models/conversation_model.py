@@ -6,23 +6,17 @@ from models.workflow import Workflow
 
 class ConversationContext(BaseModel):
 
-    # Companies currently being discussed
-    companies: list[Company] = Field(
-        default_factory=list
-    )
+    # Active companies in the conversation
+    companies: list[Company] = Field(default_factory=list)
 
-    # Previous workflow executed
+    # Previous workflow
     last_workflow: Workflow | None = None
 
-    # Last user query
+    # Previous user query
     last_query: str = ""
 
-    # Last generated report
-    last_report: dict = Field(
-        default_factory=dict
-    )
+    # Previous report
+    last_report: dict = Field(default_factory=dict)
 
-    # Last comparison result
-    last_comparison: dict = Field(
-        default_factory=dict
-    )
+    # Previous comparison
+    last_comparison: dict = Field(default_factory=dict)

@@ -5,7 +5,7 @@ from state import InvestmentState
 from agents.intent_agent import intent_agent
 from agents.planner_agent import planner_agent
 from agents.resolver_agent import resolver_agent
-
+from agents.context_manager import context_manager
 from routes.workflow_router import workflow_router
 
 from graphs.subgraph_nodes import (
@@ -26,6 +26,7 @@ memory = MemorySaver()
 
 builder.add_node("IntentAgent", intent_agent)
 builder.add_node("PlannerAgent", planner_agent)
+builder.add_node("ContextManager",context_manager)
 builder.add_node("ResolverAgent", resolver_agent)
 
 # --------------------
@@ -50,8 +51,8 @@ builder.add_edge(START, "IntentAgent")
 
 builder.add_edge("IntentAgent", "PlannerAgent")
 
-builder.add_edge("PlannerAgent", "ResolverAgent")
-
+builder.add_edge("PlannerAgent","ContextManager")
+builder.add_edge("ContextManager","ResolverAgent")
 # --------------------
 # Routing
 # --------------------
