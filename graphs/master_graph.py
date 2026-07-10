@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-
+from langgraph.checkpoint.memory import MemorySaver
 from state import InvestmentState
 
 from agents.intent_agent import intent_agent
@@ -17,6 +17,8 @@ from graphs.subgraph_nodes import (
 )
 
 builder = StateGraph(InvestmentState)
+
+memory = MemorySaver()
 
 # --------------------
 # Core Agents
@@ -80,4 +82,6 @@ builder.add_edge("FinanceGraph", END)
 
 builder.add_edge("NewsFinanceGraph", END)
 
-master_graph = builder.compile()
+master_graph = builder.compile(
+    checkpointer=memory
+)

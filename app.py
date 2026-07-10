@@ -1,13 +1,20 @@
 from graphs.master_graph import master_graph
+from models.conversation_model import ConversationContext
 
 def main():
-
+    thread_id = "demo-user"
     while True:
 
         query = input("\nAsk me anything (type 'exit' to quit): ")
 
         if query.lower() == "exit":
             break
+        
+        config = {
+            "configurable": {
+                "thread_id": thread_id
+            }
+        }
 
         result = master_graph.invoke(
             {
@@ -16,6 +23,8 @@ def main():
                 "intent": "",
                 "confidence": 0.0,
                 "workflow": None,
+
+                "conversation": ConversationContext(),
 
                 "user_companies": [],
                 "companies": [],
@@ -27,8 +36,9 @@ def main():
                 "comparison": {},
                 "risks": {},
                 "recommendation": {},
-                "report": {}
-            }
+                "report": {},
+            },
+            config=config
         )
 
         print("\n" + "=" * 80)

@@ -7,6 +7,7 @@ from models.risk_model import RiskOutput
 from models.recommendation_model import RecommendationOutput
 from models.report_model import ReportOutput
 from models.workflow import Workflow
+from models.conversation_model import ConversationContext
 
 class InvestmentState(TypedDict):
 
@@ -16,6 +17,8 @@ class InvestmentState(TypedDict):
     confidence: float
 
     workflow: Workflow | None
+
+    conversation: ConversationContext
 
     analysis_context: dict
     comparison: dict[str, ComparisonOutput]

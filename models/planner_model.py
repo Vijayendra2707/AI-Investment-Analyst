@@ -1,7 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from models.workflow import Workflow
 
 
 class PlannerOutput(BaseModel):
 
-    workflow: Workflow
+    workflow: Workflow = Field(
+        description="Workflow selected for this query."
+    )
