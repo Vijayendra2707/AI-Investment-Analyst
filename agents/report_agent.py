@@ -3,6 +3,8 @@ from llms.llm import llm
 from prompts.report_prompt import report_prompt
 from models.report_model import ReportOutput
 
+from utils.retry import invoke_with_retry
+
 structured_llm = llm.with_structured_output(
     ReportOutput
 )
@@ -14,30 +16,101 @@ def report_agent(state):
 
     reports = {}
 
+    # ----------------------------------
+    # No companies
+    # ----------------------------------
+
+    if not state["companies"]:
+
+        return {
+
+            "report": {}
+
+        }
+
+    # ----------------------------------
+    # Process each company
+    # ----------------------------------
+
     for company in state["companies"]:
 
-        key = company.ticker or company.input_name
+        key = company.key
 
-        analysis = state["analysis_context"][key]
+        analysis = state["analysis_context"].get(key)
 
-        response = report_chain.invoke(
-            {
-                "company": company.company_name,
-                "ticker": company.ticker,
-                "exchange": company.exchange,
+        risks = state["risks"].get(key)
 
-                "news": analysis["news"],
+        recommendation = state["recommendation"].get(key)
 
-                "finance": analysis["finance"],
+        # ----------------------------------
+        # Missing prerequisite analysis
+        # ----------------------------------
 
-                "risks": state["risks"][key],   # plural
+        if (
+            analysis is None
+            or risks is None
+            or recommendation is None
+        ):
 
-                "recommendation": state["recommendation"][key]
+            reports[key] = {
+
+                "company_name": company.company_name,
+
+                "summary":
+                "Report unavailable because prerequisite analysis is missing."
+
             }
-        )
 
-        reports[key] = response.model_dump()
+            continue
+
+        # ----------------------------------
+        # Generate Report
+        # ----------------------------------
+
+        try:
+
+            response = invoke_with_retry(
+
+                report_chain,
+
+                {
+
+                    "company": company.company_name,
+
+                    "ticker": company.ticker,
+
+                    "exchange": company.exchange,
+
+                    "news": analysis.get("news"),
+
+                    "finance": analysis.get("finance"),
+
+                    "risks": risks,
+
+                    "recommendation": recommendation,
+
+                }
+
+            )
+
+            reports[key] = response.model_dump()
+
+        except Exception as e:
+
+            reports[key] = {
+
+                "company_name": company.company_name,
+
+                "summary": f"Report generation failed: {str(e)}"
+
+            }
+
+    # ----------------------------------
+    # Return
+    # ----------------------------------
 
     return {
+
         "report": reports
+
     }

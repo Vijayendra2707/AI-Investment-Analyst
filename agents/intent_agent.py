@@ -17,7 +17,7 @@ def intent_agent(state):
             "query": state["query"]
         }
     )
-
+    
     return {
 
         "intent": result.intent,

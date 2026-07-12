@@ -20,7 +20,7 @@ class InvestmentState(TypedDict):
 
     conversation: ConversationContext
 
-    analysis_context: dict
+    analysis_context: dict[str, Any]
     comparison: dict[str, ComparisonOutput]
     user_companies: list[str]
 

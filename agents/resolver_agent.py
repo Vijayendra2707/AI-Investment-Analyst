@@ -3,6 +3,10 @@ from tools.company_resolver import search_companies
 from models.company_model import Company
 from models.resolver_model import ResolverOutput
 from prompts.resolver_prompt import resolver_prompt
+from services.conversation_manager import ConversationManager
+from utils.company_merge import merge_companies
+
+from models.workflow import Workflow
 
 from state import InvestmentState
 from llms.llm import llm
@@ -100,21 +104,77 @@ def resolve_company(
         selected_company
     )
 
-
 def resolver_agent(state: InvestmentState):
+
+    # ----------------------------------
+    # Load current conversation
+    # ----------------------------------
+
+    conversation = ConversationManager.load(state)
 
     resolved_companies = []
 
+    # ----------------------------------
+    # Resolve companies mentioned
+    # ----------------------------------
+
     for user_company in state["user_companies"]:
 
-        company = resolve_company(
-            user_company
-        )
+        company = resolve_company(user_company)
 
         resolved_companies.append(company)
 
+    # ----------------------------------
+    # Decide how to update conversation
+    # ----------------------------------
+
+    # ----------------------------------
+    # Decide how to update conversation
+    # ----------------------------------
+
+    if len(resolved_companies) == 0:
+
+        # No new companies mentioned.
+
+        # Keep previous conversation.
+        pass
+
+    elif state["workflow"] == Workflow.COMPARISON:
+
+        # Merge for comparison
+
+        conversation.companies = merge_companies(
+            conversation.companies,
+            resolved_companies
+        )
+
+    else:
+
+        # Replace current conversation
+
+        conversation.companies = resolved_companies
+    # ----------------------------------
+    # Update conversation metadata
+    # ----------------------------------
+
+    conversation = ConversationManager.update_query(
+        conversation,
+        state["query"]
+    )
+
+    conversation = ConversationManager.update_workflow(
+        conversation,
+        state["workflow"]
+    )
+
+    # ----------------------------------
+    # Return updated state
+    # ----------------------------------
     return {
 
-        "companies": resolved_companies
+        "conversation": conversation,
+
+        "companies": conversation.companies
 
     }
+

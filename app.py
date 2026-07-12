@@ -3,18 +3,19 @@ from models.conversation_model import ConversationContext
 
 def main():
     thread_id = "demo-user"
+    conversation = ConversationContext()
+    
+    config = {
+            "configurable": {
+                "thread_id": thread_id
+            }
+        }
     while True:
 
         query = input("\nAsk me anything (type 'exit' to quit): ")
 
         if query.lower() == "exit":
             break
-        
-        config = {
-            "configurable": {
-                "thread_id": thread_id
-            }
-        }
 
         result = master_graph.invoke(
             {
@@ -24,7 +25,7 @@ def main():
                 "confidence": 0.0,
                 "workflow": None,
 
-                "conversation": ConversationContext(),
+                "conversation": conversation,
 
                 "user_companies": [],
                 "companies": [],
@@ -40,6 +41,8 @@ def main():
             },
             config=config
         )
+
+        conversation = result["conversation"]
 
         print("\n" + "=" * 80)
         print("WORKFLOW")
@@ -59,7 +62,7 @@ def main():
             print(result["report"])
 
         elif result["workflow"].value == "comparison":
-
+            
             print(result["comparison"])
 
         elif result["workflow"].value == "news":
