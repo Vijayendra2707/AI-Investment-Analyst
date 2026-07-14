@@ -16,7 +16,14 @@ news_chain = news_prompt | structured_llm
 def news_agent(state):
 
     news_results = {}
+    print("=" * 80)
+    print("NEWS AGENT INPUT")
+    print("Companies:")
 
+    for company in state["companies"]:
+        print(company)
+
+    print("=" * 80)
     # ----------------------------------
     # No companies
     # ----------------------------------

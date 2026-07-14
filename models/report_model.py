@@ -8,27 +8,27 @@ class ReportOutput(BaseModel):
     )
 
     executive_summary: str = Field(
-        description="Overall summary of the investment analysis."
+        description="High-level summary of the complete investment analysis."
     )
 
     news_summary: str = Field(
-        description="Summary of recent news."
+        description="Summary of the recent news analysis."
     )
 
     financial_summary: str = Field(
-        description="Summary of financial health."
+        description="Summary of the financial analysis."
     )
 
     risk_summary: str = Field(
-        description="Summary of the identified risks."
+        description="Summary of the investment risks."
     )
 
-    recommendation: str = Field(
-        description="Buy, Hold, Sell or similar recommendation."
+    recommendation_summary: str = Field(
+        description="Summary of the investment recommendation."
     )
 
-    confidence: str = Field(
-        description="Confidence level: High, Medium or Low."
+    overall_confidence: str = Field(
+        description="Overall confidence level of the complete report: High, Medium, or Low."
     )
 
     conclusion: str = Field(

@@ -1,210 +1,113 @@
 from langchain_core.prompts import ChatPromptTemplate
 
 planner_prompt = ChatPromptTemplate.from_template("""
-You are the Planner of an AI Investment Analyst.
+You are the Planner Agent of an AI Investment Analyst.
 
 The user's intent has already been identified.
 
 Intent:
 {intent}
 
-Your job is to return TWO things:
+Your ONLY responsibility is to choose the workflow that should execute.
 
-1. workflow
-2. conversation_action
-
--------------------------
-AVAILABLE WORKFLOWS
--------------------------
+------------------------------------
+Available Workflows
+------------------------------------
 
 investment
-
 Use for:
-- Full company analysis
-- Investment recommendation
-- Risk analysis
+- Investment analysis
 - Company overview
 - SWOT analysis
+- Risk analysis
+- Investment recommendation
 - Should I invest?
-- Is this stock safe?
 - Long-term investment analysis
 
 comparison
-
 Use for:
-- Compare two or more companies
-- Which company is better?
-- Compare financials
+- Compare companies
+- Compare financial performance
 - Compare risks
+- Which company is better?
 
 news
-
 Use for:
 - Latest news
+- Headlines
 - Recent updates
-- News only
 
 finance
-
 Use for:
 - Financial statements
 - Revenue
 - Profit
-- Balance sheet
-- Cash flow
-- PE ratio
+- Balance Sheet
+- Cash Flow
+- PE Ratio
 - ROE
-- Financial metrics only
+- Financial metrics
 
 news_finance
+Use ONLY when the user explicitly requests BOTH:
+- News
+AND
+- Financial information
 
-Use ONLY when the user explicitly asks for BOTH
-news AND financial information.
+------------------------------------
+Rules
+------------------------------------
 
--------------------------
-AVAILABLE CONVERSATION ACTIONS
--------------------------
+1. Return EXACTLY one workflow.
 
-replace
+2. Never invent workflow names.
 
-Meaning:
-Replace the current conversation with a new one.
+3. If the intent is:
+   - risk analysis
+   - recommendation
+   - report
+   choose:
+   investment
 
-Use when:
-- Analyze NVIDIA
-- Analyze Apple
-- Analyze Tesla
-- News on Microsoft
-- Financials of Amazon
-- Compare NVIDIA and AMD (fresh comparison)
+4. Only choose news_finance when BOTH are explicitly requested.
 
--------------------------
+------------------------------------
+Examples
+------------------------------------
 
-keep
+Intent:
+investment
 
-Meaning:
-Keep the existing conversation.
+workflow:
+investment
 
-Use when:
-- Latest news
-- Latest finance
-- Latest risks
-- Recommendation
-- Tell me more
-- Should I invest?
-- What are the risks?
 
--------------------------
+Intent:
+comparison
 
-merge
+workflow:
+comparison
 
-Meaning:
-Merge new companies into the current conversation.
 
-Use when:
-- Compare it with AMD
-- Also include Tesla
-- Add Apple
-- Compare against Google
+Intent:
+news
 
--------------------------
+workflow:
+news
 
-reset
 
-Meaning:
-Clear the conversation.
+Intent:
+finance
 
-Use when:
-- Reset
-- Start over
-- Forget everything
-- Clear conversation
+workflow:
+finance
 
--------------------------
 
-remove
+Intent:
+news_finance
 
-Meaning:
-Remove companies from the conversation.
-
-Use when:
-- Remove AMD
-- Forget Tesla
-- Don't include Apple
-
--------------------------
-IMPORTANT
--------------------------
-
-Return EXACTLY one workflow.
-
-Return EXACTLY one conversation_action.
-
-conversation_action MUST be EXACTLY one of:
-
-replace
-keep
-merge
-reset
-remove
-
-Never return:
-
-continue
-new
-extend
-start
-clear
-
--------------------------
-EXAMPLES
--------------------------
-
-Analyze NVIDIA
-
-workflow = investment
-
-conversation_action = replace
-
--------------------------
-
-Compare it with AMD
-
-workflow = comparison
-
-conversation_action = merge
-
--------------------------
-
-Latest news
-
-workflow = news
-
-conversation_action = keep
-
--------------------------
-
-Should I invest?
-
-workflow = investment
-
-conversation_action = keep
-
--------------------------
-
-Reset conversation
-
-workflow = investment
-
-conversation_action = reset
-
--------------------------
-
-Remove AMD
-
-workflow = investment
-
-conversation_action = remove
+workflow:
+news_finance
 
 Return ONLY the structured output.
 """)

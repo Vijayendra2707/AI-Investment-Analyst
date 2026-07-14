@@ -8,7 +8,7 @@ class ResolverOutput(BaseModel):
     )
 
     confidence: float = Field(
-        ge=0,
-        le=1,
+        ge=0.0,
+        le=1.0,
         description="Confidence score."
     )

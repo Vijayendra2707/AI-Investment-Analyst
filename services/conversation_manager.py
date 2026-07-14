@@ -53,7 +53,7 @@ class ConversationManager:
     @staticmethod
     def remove_company(
         conversation: ConversationContext,
-        ticker: str,
+        key: str,
     ) -> ConversationContext:
 
         conversation.companies = [
@@ -62,7 +62,7 @@ class ConversationManager:
 
             for company in conversation.companies
 
-            if company.ticker != ticker
+            if company.key != key
 
         ]
 

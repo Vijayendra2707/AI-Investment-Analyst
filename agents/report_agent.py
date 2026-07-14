@@ -87,7 +87,7 @@ def report_agent(state):
 
                     "risks": risks,
 
-                    "recommendation": recommendation,
+                    "recommendation_summary": recommendation,
 
                 }
 

@@ -1,5 +1,8 @@
 from graphs.master_graph import master_graph
 from models.conversation_model import ConversationContext
+from utils.conversation_action_detector import detect_conversation_action
+from models.conversation_action_model import ConversationAction
+from services.conversation_manager import ConversationManager
 
 def main():
     thread_id = "demo-user"
@@ -14,6 +17,26 @@ def main():
 
         query = input("\nAsk me anything (type 'exit' to quit): ")
 
+        # ----------------------------------
+        # Application Commands
+        # ----------------------------------
+
+        action = detect_conversation_action(
+            query=query,
+            current_companies=conversation.companies,
+            user_companies=[]
+        )
+
+        if action == ConversationAction.RESET:
+
+            conversation = ConversationManager.reset(conversation)
+
+            print("\n" + "=" * 80)
+            print("Conversation cleared successfully.")
+            print("=" * 80)
+
+            continue
+
         if query.lower() == "exit":
             break
 
@@ -26,7 +49,7 @@ def main():
                 "workflow": None,
 
                 "conversation": conversation,
-
+                
                 "user_companies": [],
                 "companies": [],
 
@@ -42,6 +65,10 @@ def main():
             config=config
         )
 
+        print("\n" + "=" * 80)
+        print("CONVERSATION AFTER GRAPH")
+        print(result["conversation"])
+        print("=" * 80)
         conversation = result["conversation"]
 
         print("\n" + "=" * 80)

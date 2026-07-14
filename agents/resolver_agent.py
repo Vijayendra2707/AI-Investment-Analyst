@@ -1,10 +1,12 @@
 from tools.company_resolver import search_companies
 
+from utils.conversation_action_detector import detect_conversation_action
 from models.company_model import Company
 from models.resolver_model import ResolverOutput
 from prompts.resolver_prompt import resolver_prompt
 from services.conversation_manager import ConversationManager
 from utils.company_merge import merge_companies
+from models.conversation_action_model import ConversationAction
 
 from models.workflow import Workflow
 
@@ -111,7 +113,18 @@ def resolver_agent(state: InvestmentState):
     # ----------------------------------
 
     conversation = ConversationManager.load(state)
+    print("=" * 80)
+    print("RESOLVER INPUT")
+    print("Conversation Companies:")
+    for c in state["conversation"].companies:
+        print(c)
 
+    print("User Companies:")
+    print(state["user_companies"])
+
+    print("Workflow:")
+    print(state["workflow"])
+    print("=" * 80)
     resolved_companies = []
 
     # ----------------------------------
@@ -123,39 +136,48 @@ def resolver_agent(state: InvestmentState):
         company = resolve_company(user_company)
 
         resolved_companies.append(company)
-
-    # ----------------------------------
-    # Decide how to update conversation
-    # ----------------------------------
-
-    # ----------------------------------
-    # Decide how to update conversation
+    
+        # ----------------------------------
+    # Update conversation
     # ----------------------------------
 
-    if len(resolved_companies) == 0:
+    action = detect_conversation_action(
 
-        # No new companies mentioned.
+        query=state["query"],
 
-        # Keep previous conversation.
+        current_companies=conversation.companies,
+
+        user_companies=state["user_companies"]
+
+    )
+    if action == ConversationAction.KEEP:
+
+        # No change to the conversation
         pass
 
-    elif state["workflow"] == Workflow.COMPARISON:
+    elif action == ConversationAction.REPLACE:
 
-        # Merge for comparison
+        conversation.companies = resolved_companies
+
+    elif action == ConversationAction.MERGE:
 
         conversation.companies = merge_companies(
             conversation.companies,
             resolved_companies
         )
 
-    else:
+    elif action == ConversationAction.REMOVE:
 
-        # Replace current conversation
+        for company in resolved_companies:
 
-        conversation.companies = resolved_companies
-    # ----------------------------------
-    # Update conversation metadata
-    # ----------------------------------
+            conversation = ConversationManager.remove_company(
+                conversation,
+                company.key
+            )
+
+    elif action == ConversationAction.RESET:
+
+        conversation = ConversationManager.reset(conversation)
 
     conversation = ConversationManager.update_query(
         conversation,
@@ -166,7 +188,16 @@ def resolver_agent(state: InvestmentState):
         conversation,
         state["workflow"]
     )
+    
+    print("=" * 80)
+    print("CONVERSATION ACTION")
+    print(action)
 
+    print("Conversation Companies:")
+    for company in conversation.companies:
+        print(company)
+
+    print("=" * 80)
     # ----------------------------------
     # Return updated state
     # ----------------------------------

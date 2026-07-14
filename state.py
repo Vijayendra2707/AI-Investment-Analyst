@@ -8,6 +8,7 @@ from models.recommendation_model import RecommendationOutput
 from models.report_model import ReportOutput
 from models.workflow import Workflow
 from models.conversation_model import ConversationContext
+from models.conversation_action_model import ConversationAction
 
 class InvestmentState(TypedDict):
 

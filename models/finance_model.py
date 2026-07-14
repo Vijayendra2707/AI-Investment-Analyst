@@ -1,20 +1,32 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class FinanceOutput(BaseModel):
 
-    company_name: str
+    financial_health: str = Field(
+        description="Overall assessment of the company's financial condition."
+    )
 
-    overall_health: str
+    growth_potential: str = Field(
+        description="Assessment of the company's future growth prospects."
+    )
 
-    revenue_growth: str
+    profitability: str = Field(
+        description="Evaluation of earnings, margins, and overall profitability."
+    )
 
-    profitability: str
+    valuation: str = Field(
+        description="Assessment of whether the company appears undervalued, fairly valued, or overvalued."
+    )
 
-    valuation: str
+    strengths: list[str] = Field(
+        description="Key financial strengths identified from the supplied financial data."
+    )
 
-    strengths: list[str]
+    weaknesses: list[str] = Field(
+        description="Key financial weaknesses identified from the supplied financial data."
+    )
 
-    weaknesses: list[str]
-
-    summary: str
+    summary: str = Field(
+        description="Concise investment-oriented summary of the company's financial position."
+    )

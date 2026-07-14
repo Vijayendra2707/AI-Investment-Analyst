@@ -1,25 +1,31 @@
 from pydantic import BaseModel, Field
 
+from models.workflow import Workflow
+
 
 class IntentOutput(BaseModel):
 
-    intent: str = Field(
+    intent: Workflow = Field(
         description="""
-Possible intents:
+The workflow that should execute.
 
-investment_analysis
+Allowed values:
+
+investment
+comparison
 news
 finance
-comparison
-risk_analysis
-report
+news_finance
 """
     )
 
     companies: list[str] = Field(
-        description="List of companies mentioned by the user."
+        default_factory=list,
+        description="Companies explicitly mentioned by the user."
     )
 
     confidence: float = Field(
-        description="Confidence between 0 and 1"
+        ge=0.0,
+        le=1.0,
+        description="Confidence score between 0 and 1."
     )

@@ -4,37 +4,37 @@ from pydantic import BaseModel, Field
 class ComparisonOutput(BaseModel):
 
     executive_summary: str = Field(
-        description="High level summary of the comparison."
+        description="High-level summary of the comparison."
     )
 
     financial_comparison: str = Field(
-        description="Comparison of financial performance."
+        description="Comparison of the companies' financial performance."
     )
 
     news_comparison: str = Field(
-        description="Comparison of recent news and sentiment."
+        description="Comparison of recent news, sentiment, and major events."
     )
 
     strengths: dict[str, list[str]] = Field(
-        description="Strengths of each company."
+        description="Key strengths for each company."
     )
 
     weaknesses: dict[str, list[str]] = Field(
-        description="Weaknesses of each company."
+        description="Key weaknesses for each company."
     )
 
     winner: str = Field(
-        description="Best investment opportunity."
+        description="Company that performs best overall based on the supplied analyses."
     )
 
     recommendation: str = Field(
-        description="Final recommendation."
+        description="Investment recommendation explaining why the winner should or should not be preferred."
     )
 
     confidence: str = Field(
-        description="Confidence level."
+        description="Overall confidence level: High, Medium, or Low."
     )
 
     conclusion: str = Field(
-        description="Final conclusion."
+        description="Final comparison conclusion."
     )
